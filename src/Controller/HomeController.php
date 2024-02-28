@@ -13,6 +13,10 @@ class HomeController extends AbstractController
      */
     public function index(): Response
     {
+        $hasAccess = $this->isGranted('ROLE_USER');
+        if( !$hasAccess ){
+            return $this->redirectToRoute('app_frontpage');
+        }
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
         ]);

@@ -1,0 +1,28 @@
+.custom-card{
+    margin: 5% auto;
+}
+
+.custom-form-group{
+    margin-bottom: 10px;
+}
+
+.custon-form-btn{
+    margin-top: 5px;
+}
+
+.minia{
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+}
+
+.message-container{
+    display : inline-flex
+}
+
+.text-container{
+    display : inline-flex;
+    justify-items: center;
+}
+
+

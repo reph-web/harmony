@@ -5,4 +5,5 @@
 {% block body %}
 Logged as {{app.user.username}}
 <a href="{{ path('app_logout') }}">logout</a>
+<a href="{{ path('app_profilePage', {'username' : app.user.username}) }}">profile page</a>
 {% endblock %}

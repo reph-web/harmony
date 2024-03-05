@@ -16,6 +16,12 @@ framework:
     #fragments: true
     php_errors:
         log: true
+    
+    assets:
+        packages:
+            avatar:
+                base_path: avatar/
+
 
 when@test:
     framework:

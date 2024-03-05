@@ -4,4 +4,42 @@
 
 {% block body %}
 Hello Admin !
+<div>Number of users : {{nbOfUsers}}<div>
+<a href=" {{ path('app_userList') }}">link to user list</a>
+
+<!-- Button trigger CreateChat modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createChatModal">
+    Create Chat
+</button>
+<!-- Modal for Createhat Username -->
+<div class="modal fade" id="createChatModal" tabindex="-1" role="dialog" aria-labelledby="createChatModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="createChatlLabel">Create Chat</h5>
+        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+        </button>
+        </div>
+        
+        <div class="modal-body">
+        {{ form_start(createChatForm) }}
+        {{ form_label(createChatForm.name)}}
+        {{ form_widget(createChatForm.name, { 'attr': {'class':'form-control'} }) }}
+        </div>
+
+        <div class="modal-body">
+        {{ form_label(createChatForm.description)}}
+        {{ form_widget(createChatForm.description, { 'attr': {'class':'form-control'} }) }}
+
+        </div>
+            {{ form_row(createChatForm.rolesAuth) }}
+        <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-success" id="save-bio">Create</button>
+        {{ form_end(createChatForm) }}
+        </div>
+    </div>
+    </div>
+</div>
+
 {% endblock %}

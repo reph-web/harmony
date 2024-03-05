@@ -15,7 +15,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class RegistrationController extends AbstractController
 {
     /**
-     * @Route("/register", name="app_register")
+     * @Route("/register", name="app_register",  methods={"GET", "POST"})
      */
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
@@ -26,7 +26,7 @@ class RegistrationController extends AbstractController
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted()) {
             // encode the plain password
             $user->setPassword(
             $userPasswordHasher->hashPassword(
@@ -34,7 +34,10 @@ class RegistrationController extends AbstractController
                     $form->get('plainPassword')->getData()
                 )
             );
-
+            dump($user);
+            $user->setAvatar(rand(0, 3). '.png');
+            $user->setRegistrationDate(new \DateTime());
+            dump($user);
             $entityManager->persist($user);
             $entityManager->flush();
             // do anything else you need here, like send an email

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Chats;
+use App\Form\AddRoleType;
 use App\Form\CreateChatType;
 use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManager;
@@ -61,7 +62,7 @@ class AdminController extends AbstractController
         if($this->isGranted('ROLE_ADMIN')){
             return $this->render('admin/userlist.html.twig', [
                 'controller_name' => 'AdminController',
-                'users' => $repo->findAll()
+                'users' => $repo->findAll(),
             ]);
         }
         return $this->render('admin/notadmin.html.twig', [

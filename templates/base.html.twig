@@ -30,11 +30,16 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ path('app_chat') }}">Chat</a>
                     </li>
+                    {% if is_granted('ROLE_ADMIN')  %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_admin') }}">Admin</a>
+                    </li>
+                    {% endif %}
                 </ul>
                 <span class="navbar-item">
                     {% if app.user %}
                         <img src="{{ asset(app.user.avatar, 'avatar') }}" class="minia">
-                        <a>{{app.user.username}}</a>
+                        <a href="{{ path('app_profilePage', {'username' : app.user.username}) }}">{{app.user.username}}</a>
                     {% endif %}
                 </span>
             </div>

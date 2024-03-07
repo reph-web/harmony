@@ -16,8 +16,9 @@ class CreateChatType extends AbstractType
             ->add('name')
             ->add('rolesAuth' ,ChoiceType::class, [
                 'choices'  => [
-                    'ROLE_USER' => 'User',
-                    'ROLE_ADMIN' => 'Admin',
+                    'ROLE_USER' => 'ROLE_USER',
+                    'ROLE_ADMIN' => 'ROLE_ADMIN',
+                    'ROLE_SECRET' => 'ROLE_SECRET',
                 ],
                 'multiple' => true,
             ])

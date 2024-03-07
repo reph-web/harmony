@@ -5,34 +5,35 @@
 {% block body %}
 {% if userInfo %}
 <div class="row"><ul class="list-group">
-
-  <li class="list-group-item">Id : {{userInfo.id}}</li>
+  {% if is_granted('ROLE_ADMIN') %}
+    <li class="list-group-item">Id : {{userInfo.id}}</li>
+  {% endif %}
   <li class="list-group-item">avatar : <img src="{{ asset(userInfo.avatar, 'avatar') }}" style="width 50px; height: 50px" />
     {% if is_granted('ROLE_ADMIN') or app.user.username == userInfo.username %}
       <!-- Button trigger Edit Avatar modal -->
       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editAvatarModal">
         Upload
       </button>
-      <!-- Modal for Edit Username -->
+      <!-- Modal for Edit Avatar -->
       <div class="modal fade" id="editAvatarModal" tabindex="-1" role="dialog" aria-labelledby="editAvatarModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title" id="editAvatarModalLabel">Edit bio</h5>
+              <h5 class="modal-title" id="editAvatarModalLabel">Upload Avatar</h5>
               <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
               </button>
             </div>
             
             <div class="modal-body">
-            {{ form_start(editUsernameForm) }}
-            {{ form_label(editUsernameForm.username)}}
-              {{ form_widget(editUsernameForm.username, { 'attr': {'class':'form-control'} }) }}
+            {{ form_start(editAvatarForm) }}
+             {{ form_label(editAvatarForm.avatar, 'Avatar (.png, .jpg, .jpeg & .gif only)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(editAvatarForm.avatar, {'attr': {'class': 'form-control'}}) }}
             </div>
 
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-success" id="save-bio">Save changes</button>
-              {{ form_end(editUsernameForm) }}
+              <button type="submit" class="btn btn-success" id="save-avatar">Upload</button>
+              {{ form_end(editAvatarForm) }}
             </div>
           </div>
         </div>
@@ -48,7 +49,7 @@
     {% if is_granted('ROLE_ADMIN') or app.user.username == userInfo.username %}
     <!-- Button trigger Edit Username modal -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editUsernameModal">
-      Edit
+      Edit   <!-- Button trigger Edit Username modal -->
     </button>
     <!-- Modal for Edit Username -->
     <div class="modal fade" id="editUsernameModal" tabindex="-1" role="dialog" aria-labelledby="editUsernameModal" aria-hidden="true">
@@ -113,6 +114,44 @@
     {% endif %}
   </li>
   {% if is_granted('ROLE_ADMIN')%}
+  <li class="list-group-item">
+    Role:
+    {% for role in userInfo.roles %}
+      <span class="badge rounded-pill bg-secondary">{{role}}</span> 
+    {% endfor %}
+
+    <!-- Button trigger Add Role modal -->
+    <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#addRoleModal">
+      Add Role
+    </button>
+    <!-- Modal for Delete User -->
+    <div class="modal fade" id="addRoleModal" tabindex="-1" role="dialog" aria-labelledby="addRoleModal" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="addRoleModalLabel">Add Role</h5>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            {{ form_start(addRoleForm) }}
+            {{ form_row(addRoleForm.roles) }}
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success" id="add-role">Add Role</button>
+            {{ form_end(addRoleForm) }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <a href="{{ path('app_deleteRoles', {'username' : userInfo.username}) }}">
+      <button type="button" class="btn btn-danger" id="delete">Delete all roles</button>
+    </a>
+  </li>
+
     <li class="list-group-item">
       <!-- Button trigger Delete User modal -->
       <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">
@@ -134,7 +173,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               <a href="{{ path('app_deleteUser', {'username' : userInfo.username}) }}">
-                <button type="button" class="btn btn-success" id="save-bio">Delete!!</button>
+                <button type="button" class="btn btn-success" id="delete-user">Delete!!</button>
               </a>
             </div>
           </div>

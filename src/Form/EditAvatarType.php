@@ -30,9 +30,10 @@ class EditAvatarType extends AbstractType
                 new File([
                     'maxSize' => '8192k',
                     'mimeTypes' => [
-                        'application/jpg',
-                        'application/png',
-                        'application/gif'
+                        'image/jpg',
+                        'image/jpeg',
+                        'image/png',
+                        'image/gif'
                     ],
                     'mimeTypesMessage' => 'Please upload a jpg, png or gif file',
                 ])

@@ -4,6 +4,11 @@
 
 {% block body %}
 Logged as {{app.user.username}}
-<a href="{{ path('app_logout') }}">logout</a>
-<a href="{{ path('app_profilePage', {'username' : app.user.username}) }}">profile page</a>
+<ul class="list-group">
+    <li class="list-group-item"><a href="{{ path('app_logout') }}">logout</a></li>
+    <li class="list-group-item"><a href="{{ path('app_profilePage', {'username' : app.user.username}) }}">profile page</a></li>
+{% if is_granted('ROLE_ADMIN') %}
+    <li class="list-group-item"><a href="{{ path('app_admin') }}">admin page</a></li>   
+{% endif %}
+</ul>
 {% endblock %}

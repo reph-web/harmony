@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Messages;
+use App\Entity\Chats;
+use App\Entity\Users;
 use App\Form\SendMessageType;
 use App\Repository\ChatsRepository;
 use App\Repository\MessagesRepository;
@@ -17,38 +19,57 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChatController extends AbstractController
 {
     /**
-     * @Route("/chat", name="app_chat")
+     * @Route("/chat/{chatname}", defaults={"chatname"="general"}, name="app_chat")
      */
-    public function index(ChatsRepository $chatRepo, MessagesRepository $messagesRepo, Request $request, EntityManagerInterface $entityManager): Response
+    public function index($chatname,ChatsRepository $chatRepo, MessagesRepository $messagesRepo, Request $request, EntityManagerInterface $entityManager): Response
     {
-        if( $this->getUser() ){
-            $message = new Messages();
+        $chat = $chatRepo->findOneBy(["name"=>$chatname]);
 
-            //Creat Chat Form
-            $SendMessageForm = $this->createForm(SendMessageType::class, $message);
-            $SendMessageForm->handleRequest($request);  
-            if ($SendMessageForm->isSubmitted() && $SendMessageForm->isValid()) {
+        if($this->getUser()){
+            if($chat){
+                $user = $this->getUser();
+                $hasRole = false;
+                foreach ($user->getRoles() as $role){
+                    if(in_array($role, $chat->getRolesAuth())){
+                        $hasRole = true;
+                    }
+                }
 
-                $message->setAuthor($this->getUser());
-                $message->setChat($chatRepo->find(1));
-                $message->setTimestamp(new \DateTime());
-                $message->setIsImg(false);
-                $message->setIsVid(false);
+                if($hasRole){
+                    $message = new Messages();
+                    //Creat Chat Form
+                    $SendMessageForm = $this->createForm(SendMessageType::class, $message);
+                    $SendMessageForm->handleRequest($request);  
+                    if ($SendMessageForm->isSubmitted() && $SendMessageForm->isValid()) {
 
-                $entityManager->persist($message);
-                $entityManager->flush();
-                $this->addFlash('success', 'msg created!');
+                        $message->setAuthor($this->getUser());
+                        $message->setChat($chat);
+                        $message->setTimestamp(new \DateTime());
+                        $message->setIsImg(false);
+                        $message->setIsVid(false);
+
+                        $entityManager->persist($message);
+                        $entityManager->flush();
+                    }
+                    return $this->render('chat/index.html.twig', [
+                        'controller_name' => 'ChatController',
+                        'chat' => $chat,
+                        'messages' => $messagesRepo->findAll(),
+                        'messageForm' => $SendMessageForm->createView()
+                    ]);
+                }else{
+                    $this->addFlash('danger', 'You don\'t have access to this chat');
+                    return $this->redirectToRoute('app_home');
+                }
+            }else{
+                $this->addFlash('danger', "This chat doesn't exist");
+                return $this->redirectToRoute('app_home');
             }
-            return $this->render('chat/index.html.twig', [
-                'controller_name' => 'ChatController',
-                'chat' => $chatRepo->find(1),
-                'messages' => $messagesRepo->findAll(),
-                'messageForm' => $SendMessageForm->createView()
-            ]);
         }else{
             return $this->redirectToRoute('app_login');
         }
     }
+
     /**
      * @Route("/delete-message/{id}", name="app_deleteMessage")
      */

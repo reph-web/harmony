@@ -76,7 +76,7 @@ class Chats
     {
         if (!$this->messages->contains($message)) {
             $this->messages[] = $message;
-            $message->setChatId($this);
+            $message->setChat($this);
         }
 
         return $this;
@@ -86,8 +86,8 @@ class Chats
     {
         if ($this->messages->removeElement($message)) {
             // set the owning side to null (unless already changed)
-            if ($message->getChatId() === $this) {
-                $message->setChatId(null);
+            if ($message->getChat() === $this) {
+                $message->setChat(null);
             }
         }
 

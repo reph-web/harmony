@@ -16,6 +16,11 @@
     margin-right: 15px;
 }
 
+.minia-profile{
+    width: 26rem;
+    height: 26rem;
+}
+
 .message-container{
     display : inline-flex
 }

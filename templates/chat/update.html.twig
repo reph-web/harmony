@@ -1,0 +1,20 @@
+{% for  message in messages|slice(-500) %}
+                <li class="alert alert-primary message-container p-0" msgId="{{message.id}}">
+                     <img class="minia" src="{{ asset(message['authorAvatar'], 'avatar') }}">
+                    <div class="text-container mt-2">
+                        
+                        {% if "ROLE_ADMIN" in message.authorRoles %}
+                        <a class="text-danger" href="{{ path('app_profilePage', {'username' : message.author}) }}">{{message.author}}</a>
+                        {% else %}
+                        <a href="{{ path('app_profilePage', {'username' : message.author}) }}">{{message.author}}</a>
+                        {% endif %}
+                        
+                        <span class="ms-2">:</span>
+                        <span class="ms-2">{{message.content}}</span>
+                        {% if is_granted("ROLE_ADMIN") or app.user.username ==  message.author %}
+                        <a class="ms-2" href="{{ path('app_deleteMessage', {'id' : message.id})}}"><button type="button" class="btn btn-danger btn-sm">Delete</button></a>
+                        {% endif %}
+                    </div>
+                </li>
+            </li>
+        {% endfor %}

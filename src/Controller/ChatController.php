@@ -12,6 +12,7 @@ use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Id;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +22,7 @@ class ChatController extends AbstractController
     /**
      * @Route("/chat/{chatname}", defaults={"chatname"="general"}, name="app_chat")
      */
-    public function index($chatname,ChatsRepository $chatRepo, MessagesRepository $messagesRepo, Request $request, EntityManagerInterface $entityManager): Response
+    public function index($chatname, ChatsRepository $chatRepo, MessagesRepository $messagesRepo, Request $request, EntityManagerInterface $entityManager): Response
     {
         $chat = $chatRepo->findOneBy(["name"=>$chatname]);
 
@@ -85,6 +86,35 @@ class ChatController extends AbstractController
             $this->addFlash('danger', 'Forbidden');
             return $this->redirectToRoute('app_chat');
         }
+    }
+
+    /**
+     * @Route("/update/{sentChatId}/{lastMsgId}", name="app_update")
+     */
+    public function update($sentChatId, $lastMsgId, MessagesRepository $messagesRepo, EntityManagerInterface $entityManager): Response
+    {
+        $lastRetrievedMsg  = $messagesRepo->retrieveLastMsg($sentChatId, $lastMsgId);
+        $cleanedResult = [];
+        foreach($lastRetrievedMsg as $msg){
+            $newEntry = [
+                'id' => $msg->getId(),
+                'author' => $msg->getAuthor()->getUserIdentifier(),
+                'authorRoles' => $msg->getAuthor()->getRoles(),
+                'authorAvatar' => $msg->getAuthor()->getAvatar(),
+                'content' => $msg->getContent(),
+                'chat' => $msg->getChat(),
+
+            ];
+            array_push($cleanedResult, $newEntry);
+        }
+        if(!$cleanedResult){
+            return new JsonResponse(null);
+        }
+        return $this->render('chat/update.html.twig', [
+            'controller_name' => 'ChatController',
+            'messages' => $cleanedResult,
+            'chatId' => $sentChatId
+        ]);
     }
 
 }

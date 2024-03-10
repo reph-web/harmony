@@ -3,12 +3,21 @@
 {% block title %}{% endblock %}
 
 {% block body %}
-Logged as {{app.user.username}}
-<ul class="list-group">
-    <li class="list-group-item"><a href="{{ path('app_logout') }}">logout</a></li>
-    <li class="list-group-item"><a href="{{ path('app_profilePage', {'username' : app.user.username}) }}">profile page</a></li>
-{% if is_granted('ROLE_ADMIN') %}
-    <li class="list-group-item"><a href="{{ path('app_admin') }}">admin page</a></li>   
-{% endif %}
-</ul>
+<p class="fs-5 text ms-4 mt-2">Logged as {{app.user.username}}</p>
+
+<div class="row w-50 mx-auto">
+<div class="d-grid gap-3 ">
+    <button class="btn btn-lg btn-primary w-60" type="button">
+        <a class="text-white text-decoration-none" href="{{ path('app_profilePage', {'username' : app.user.username}) }}">profile page</a>
+    </button>
+    <button class="btn btn-lg btn-primary" type="button">
+        <a class="text-white text-decoration-none" href="{{ path('app_logout') }}">logout</a>
+    </button>
+    {% if is_granted('ROLE_ADMIN') %}
+        <button class="btn btn-lg btn-primary" type="button">
+            <a class="text-white text-decoration-none" href="{{ path('app_admin') }}">admin page</a>
+        </button>   
+    {% endif %}
+</div>
+</div>
 {% endblock %}

@@ -3,49 +3,70 @@
 {% block title %}Chat{% endblock %}
 
 {% block body %}
-<div>
-    <div class="card border-primary mt-3 bg-dark mb-3">
-        <div class="card-header">
-        <h3>{{chat.name}}<h3>
-        </div>
-        <div class="card-body">
-            <p class="card-title">{{chat.description}}</p>
-        </div>
-    </div>
-<div>
-    <ul class="list-group" chatId= "{{chat.id}}" id="msgList">
-        {% for  message in messages|slice(-500) %}
-            {% if  message.chat.id == chat.id %}
-                <li class="alert alert-primary message-container p-0" msgId="{{message.id}}">
-                    <img class="minia" src="{{ asset(message.author.avatar, 'avatar') }}">
-                    <div class="text-container mt-2">
-                        
-                        {% if "ROLE_ADMIN" in message.author.roles %}
-                        <a class="text-danger" href="{{ path('app_profilePage', {'username' : message.author.username}) }}">{{message.author.username}}</a>
-                        {% else %}
-                        <a href="{{ path('app_profilePage', {'username' : message.author.username}) }}">{{message.author.username}}</a>
-                        {% endif %}
-                        
-                        <span class="ms-2">:</span>
-                        <span class="ms-2">{{message.content}}</span>
-                        {% if is_granted("ROLE_ADMIN") or app.user.username ==  message.author.username %}
-                        <a class="ms-2" href="{{ path('app_deleteMessage', {'id' : message.id})}}"><button type="button" class="btn btn-danger btn-sm">Delete</button></a>
-                        {% endif %}
-                    </div>
+
+
+<div class="container-fluid p-0 m-0">
+    <div class="row">
+        <div class="col-2 bg-dark p-0 me-3 ms-4">
+            <ul class="list-group mt-3">
+                <li class=" list-group-item">
+                    <h5 class="text-white">List of chats :<h5>
                 </li>
-            {% endif %}
-                
-            </li>
-        {% endfor %} 
-    </ul>
-    <div class="sticky-bottom alert alert-primary py-1 mb-0">
-        {{form_start(messageForm)}}
-            <div class="inline-flex">
-                {{form_label(messageForm.content, "Message:", {'label_attr': {'class': 'mb-2'}})}}
-                {{form_widget(messageForm.content, { "attr": {"class":"form-control"}}) }}
-                <button type="submit" class="btn btn-success custon-form-btn">Send</button>
+                {% for authchat in authorizedChat %}
+                    <li class="list-group-item">
+                        <a href="{{ path('app_chat', {'chatname' : authchat.name}) }}">/{{ authchat.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-8 overflow-scroll custom-msgBox" id="msgBox"> 
+            <div >
+                <div class="card border-primary mt-3 bg-dark mb-3">
+                    <div class="card-header">
+                        <h3>{{chat.name}}<h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-title">{{chat.description}}</p>
+                    </div>
+                </div>
+
+                <ul class="list-group" chatId= "{{chat.id}}" id="msgList">
+                    {% for  message in messages|slice(-500) %}
+                        {% if  message.chat.id == chat.id %}
+                            <li class="alert alert-primary message-container p-0" msgId="{{message.id}}">
+                                <img class="minia" src="{{ asset(message.author.avatar, 'avatar') }}">
+                                <div class="text-container mt-2">
+                                    
+                                    {% if "ROLE_ADMIN" in message.author.roles %}
+                                    <a class="text-danger" href="{{ path('app_profilePage', {'username' : message.author.username}) }}">{{message.author.username}}</a>
+                                    {% else %}
+                                    <a href="{{ path('app_profilePage', {'username' : message.author.username}) }}">{{message.author.username}}</a>
+                                    {% endif %}
+                                    
+                                    <span class="ms-2">:</span>
+                                    <span class="ms-2">{{message.content}}</span>
+                                    {% if is_granted("ROLE_ADMIN") or app.user.username ==  message.author.username %}
+                                    <a class="ms-2" href="{{ path('app_deleteMessage', {'id' : message.id})}}"><button type="button" class="btn btn-danger btn-sm">Delete</button></a>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endif %}
+                            
+                        </li>
+                    {% endfor %} 
+                </ul>
             </div>
-        {{form_end(messageForm)}}
+
+            <div class="sticky-bottom alert alert-primary py-1 mb-0">
+                {{form_start(messageForm)}}
+                    <div class="inline-flex">
+                        {{form_label(messageForm.content, "Message:", {'label_attr': {'class': 'mb-2'}})}}
+                        {{form_widget(messageForm.content, { "attr": {"class":"form-control"}}) }}
+                        <button type="submit" class="btn btn-success custon-form-btn">Send</button>
+                    </div>
+                {{form_end(messageForm)}}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

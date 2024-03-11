@@ -19,29 +19,28 @@
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-            <div class="container-fluid">
-                <ul class="navbar-nav mr-auto">
-                    <a class="navbar-brand" style="margin-left : 1rem;" href="{{ path('app_frontpage') }}">Harmony</a>
-                
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_chat') }}">Chat</a>
-                    </li>
-                    {% if is_granted('ROLE_ADMIN')  %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_admin') }}">Admin</a>
-                    </li>
-                    {% endif %}
-                </ul>
-                <span class="navbar-item">
-                    {% if app.user %}
+        <nav class="navbar navbar-expand-md bg-primary" data-bs-theme="dark">
+            <div class="container-fluid d-flex flex-nowrap">
+                <a class="navbar-brand" style="margin-left : 1rem;" href="{{ path('app_frontpage') }}">Harmony</a>
+                {% if app.user %}
+                    <ul class="navbar-nav me-auto list-group-horizontal">
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="{{ path('app_home') }}">Home</a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="{{ path('app_chat') }}">Chat</a>
+                        </li>
+                        {% if is_granted('ROLE_ADMIN')  %}
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="{{ path('app_admin') }}">Admin</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                    <span class="navbar-item">
                         <img src="{{ asset(app.user.avatar, 'avatar') }}" class="minia">
-                        <a href="{{ path('app_profilePage', {'username' : app.user.username}) }}">{{app.user.username}}</a>
-                    {% endif %}
-                </span>
+                        <a class="text-white fs-5" href="{{ path('app_profilePage', {'username' : app.user.username}) }}">{{app.user.username}}</a>
+                    </span>
+                {% endif %}
             </div>
         </nav>
         {% for label, messages in app.flashes %}

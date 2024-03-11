@@ -1,4 +1,5 @@
 let chatId = document.getElementById('msgList').getAttribute('chatId');
+var msgBox = document.getElementById('msgBox');
 
 async function fetchNewMsg(chatId, lastMsgId){
     await fetch('http://localhost:9000/update/'+chatId+'/'+lastMsgId).then(response => {
@@ -15,6 +16,7 @@ async function fetchNewMsg(chatId, lastMsgId){
         let container = document.getElementById('msgList');
         for(message of messageList){
             container.appendChild(message);
+            msgBox.scrollTop = msgBox.scrollHeight;
         }
     
     }).catch((error)=>{
@@ -23,9 +25,18 @@ async function fetchNewMsg(chatId, lastMsgId){
 }
 setInterval(()=>{
     let lastMsg = document.getElementsByClassName('message-container');
-    lastMsg  = lastMsg[lastMsg.length-1];
-    let lastMsgId = lastMsg.getAttribute('msgId');
+    var lastMsgId = 0
+    if(lastMsg.length !== 0){
+        lastMsg  = lastMsg[lastMsg.length-1];
+        lastMsgId = lastMsg.getAttribute('msgId');
+    }
     fetchNewMsg(chatId, lastMsgId)
-    document.body.scrollTop = document.body.scrollHeight;
 },500);
+
+
+
+msgBox.scrollTop = msgBox.scrollHeight;
+msgBox.addEventListener("scroll", event => {
+    console.log('scrollTop: ' + msgBox.scrollTop);
+}, { passive: true });
 

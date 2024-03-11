@@ -3,14 +3,16 @@
 {% block title %}{% endblock %}
 
 {% block body %}
-Frontpage
-{% if app.user%}
-        You're logged :
-        <a href="{{ path('app_home') }}">home</a>
-        <a href="{{ path('app_logout') }}">logout</a>
-    {% else %}
-        You're not logged :
-        <a href="{{ path('app_register') }}">register</a>
-        <a href="{{ path('app_login') }}">login</a>
-{% endif %}
+<div class="container text-center">
+    <h1 class="text-white">Welcome !<h1> 
+    {% if app.user%}
+            <h3 class="text-white">You're logged :</h3>
+            <a class="btn btn-primary" href="{{ path('app_home') }}">Home</a>
+            <a class="btn btn-primary" href="{{ path('app_logout') }}">Logout</a>
+        {% else %}
+            <h3 class="text-white">You're not logged :</h3>
+            <a class="btn btn-primary" href="{{ path('app_register') }}">Register</a>
+            <a class="btn btn-primary" href="{{ path('app_login') }}">Login</a>
+    {% endif %}
+</div>
 {% endblock %}

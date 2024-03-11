@@ -38,6 +38,19 @@ class ChatController extends AbstractController
 
                 if($hasRole){
                     $message = new Messages();
+                    //Create list of authorized chat for the user 
+                    $chatList= $chatRepo->findAll();
+                    $authorizedChat = [];
+                    foreach($chatList as $c){
+                        foreach ($user->getRoles() as $role){
+                            if(in_array($role, $c->getRolesAuth())){
+                                $authorizedChat[] = $c;
+                                break;
+                            }
+                        }        
+
+                    }
+
                     //Creat Chat Form
                     $SendMessageForm = $this->createForm(SendMessageType::class, $message);
                     $SendMessageForm->handleRequest($request);  
@@ -56,7 +69,8 @@ class ChatController extends AbstractController
                         'controller_name' => 'ChatController',
                         'chat' => $chat,
                         'messages' => $messagesRepo->findAll(),
-                        'messageForm' => $SendMessageForm->createView()
+                        'messageForm' => $SendMessageForm->createView(),
+                        'authorizedChat' => $authorizedChat,
                     ]);
                 }else{
                     $this->addFlash('danger', 'You don\'t have access to this chat');
@@ -91,30 +105,47 @@ class ChatController extends AbstractController
     /**
      * @Route("/update/{sentChatId}/{lastMsgId}", name="app_update")
      */
-    public function update($sentChatId, $lastMsgId, MessagesRepository $messagesRepo, EntityManagerInterface $entityManager): Response
-    {
-        $lastRetrievedMsg  = $messagesRepo->retrieveLastMsg($sentChatId, $lastMsgId);
-        $cleanedResult = [];
-        foreach($lastRetrievedMsg as $msg){
-            $newEntry = [
-                'id' => $msg->getId(),
-                'author' => $msg->getAuthor()->getUserIdentifier(),
-                'authorRoles' => $msg->getAuthor()->getRoles(),
-                'authorAvatar' => $msg->getAuthor()->getAvatar(),
-                'content' => $msg->getContent(),
-                'chat' => $msg->getChat(),
+    public function update($sentChatId, $lastMsgId, MessagesRepository $messagesRepo, ChatsRepository $chatRepo): Response
+    {   
+        $chat = $chatRepo->findOneBy(["id"=>$sentChatId]);
+        if($this->getUser()){
+            if($chat){
+                $user = $this->getUser();
+                $hasRole = false;
+                foreach ($user->getRoles() as $role){
+                    if(in_array($role, $chat->getRolesAuth())){
+                        $hasRole = true;
+                    }
+                }
 
-            ];
-            array_push($cleanedResult, $newEntry);
+                if($hasRole){
+                    $lastRetrievedMsg  = $messagesRepo->retrieveLastMsg($sentChatId, $lastMsgId);
+                    $cleanedResult = [];
+                    foreach($lastRetrievedMsg as $msg){
+                        $newEntry = [
+                            'id' => $msg->getId(),
+                            'author' => $msg->getAuthor()->getUserIdentifier(),
+                            'authorRoles' => $msg->getAuthor()->getRoles(),
+                            'authorAvatar' => $msg->getAuthor()->getAvatar(),
+                            'content' => $msg->getContent(),
+                            'chat' => $msg->getChat(),
+
+                        ];
+                        array_push($cleanedResult, $newEntry);
+                    }
+                    if(!$cleanedResult){
+                        return new JsonResponse(null);
+                    }
+                    return $this->render('chat/update.html.twig', [
+                        'controller_name' => 'ChatController',
+                        'messages' => $cleanedResult,
+                        'chatId' => $sentChatId
+                    ]);
+                }
+                return new Response("You dont have access to this chat", 401);
+            }
+            return new Response("This chat don't exist", 404);
         }
-        if(!$cleanedResult){
-            return new JsonResponse(null);
-        }
-        return $this->render('chat/update.html.twig', [
-            'controller_name' => 'ChatController',
-            'messages' => $cleanedResult,
-            'chatId' => $sentChatId
-        ]);
+        return new Response("You are not logged", 401);
     }
-
 }

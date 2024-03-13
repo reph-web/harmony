@@ -1,6 +1,10 @@
+// Remove old msg form textarea
+let txtarea = document.getElementById('send_message_content');
+txtarea.value = '';
+
+// Real-Time Message Update
 let chatId = document.getElementById('msgList').getAttribute('chatId');
 var msgBox = document.getElementById('msgBox');
-
 async function fetchNewMsg(chatId, lastMsgId){
     await fetch('http://localhost:9000/update/'+chatId+'/'+lastMsgId).then(response => {
         if (!response.ok) {

@@ -19,8 +19,16 @@ async function fetchNewMsg(chatId, lastMsgId){
         let messageList = html.getElementsByClassName('message-container');
         let container = document.getElementById('msgList');
         for(message of messageList){
-            container.appendChild(message);
-            msgBox.scrollTop = msgBox.scrollHeight;
+            console.log(message)
+            let lastMsg = document.getElementsByClassName('message-container')
+            lastMsg  = lastMsg[lastMsg.length-1];
+            lastMsgId = lastMsg.getAttribute('msgId');
+            if(lastMsgId !== message.getAttribute('msgId')){
+                container.appendChild(message);
+                msgBox.scrollTop = msgBox.scrollHeight;
+            }
+
+            
         }
     
     }).catch((error)=>{

@@ -6,6 +6,7 @@ use App\Entity\Chats;
 use App\Form\AddRoleType;
 use App\Form\CreateChatType;
 use App\Repository\UsersRepository;
+use App\Repository\ChatsRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,11 +20,12 @@ class AdminController extends AbstractController
     /**
      * @Route("/admin", name="app_admin")
      */
-    public function index(UsersRepository $repo, Request $request, EntityManagerInterface $entityManager): Response
+    public function index(UsersRepository $repo, ChatsRepository $cRepo, Request $request, EntityManagerInterface $entityManager): Response
     {
         
         if($this->isGranted('ROLE_ADMIN')){
             $nbOfUsers = $repo->count([]);
+            $nbOfChats = $cRepo->count([]);
             $chat = new Chats();
             //Creat Chat Form
             $createChatForm = $this->createForm(CreateChatType::class, $chat);
@@ -44,6 +46,7 @@ class AdminController extends AbstractController
             return $this->render('admin/index.html.twig', [
                 'controller_name' => 'AdminController',
                 'nbOfUsers' => $nbOfUsers,
+                'nbOfChats' => $nbOfChats,
                 'createChatForm' => $createChatForm->createView(),
 
             ]);
